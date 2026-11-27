@@ -1,0 +1,882 @@
+/* ここから下に記載していく */
+
+/* ==============================
+   全体の基本設定
+============================== */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Noto Sans JP", sans-serif;  font-size: 16px;
+  line-height: 1.8;
+  color: var(--brown);
+  background-color: #fff;
+}
+
+img {
+  max-width: 100%;  /* 画像が親の幅からはみ出さないようにする */
+  vertical-align: bottom; /* 画像の下にできるすき間を消す */
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* hidden 属性の要素は、display の指定があっても必ず隠す */
+[hidden] {
+  display: none !important;
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(100px);
+  transition: opacity 1s, transform 1s;
+}
+.fade-in.is-show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+:root {
+  --cheese: #b07a00;    /* メインのチーズ色 */
+  --cream: #fdf8ee;     /* 背景用のクリーム色 */
+  --brown: #4a3b2a;     /* 文字・フッター用の焦げ茶 */
+  --header-h: 80px;   /* ヘッダーの高さ（既存の :root に追加） */
+}
+
+/* ==============================
+   サイト全体の枠（幅1200px・中央寄せ）
+============================== */
+.wrap {
+  max-width: 1200px; /* 画面が狭いときは縮む */
+  margin: 0 auto; /* 左右の余白を自動にして中央に配置 */
+}
+
+/* ==============================
+   ヘッダー
+   ロゴ（左）とナビ（右）をフレックスボックスで横並び
+============================== */
+.header {
+  display: flex;
+  justify-content: space-between; /* 両端に配置 */
+  align-items: center;            /* 縦方向の中央でそろえる */
+  position: sticky; /*ヘッダーを固定*/
+  top: 0;
+  height: var(--header-h);
+  padding: 0 50px;
+  z-index: 10;
+  background: rgb(255, 255, 255, 0.80);
+}
+
+.header-logo img {
+  width: 240px;
+}
+
+.header-nav ul {
+  display: flex; /* li を横並びにする */
+  padding: 20px 0px;
+  gap: 50px;
+}
+
+.header-nav li {
+  font-size: 20px;
+  letter-spacing: 0.1em;
+}
+
+.header-nav li a {
+  position: relative;
+}
+
+.header-nav li a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0;
+  height: 2px;
+  background: var(--cheese);
+  transition: width 0.3s;
+}
+.header-nav li a:hover::after {
+  width: 100%;
+}
+/* ハンバーガーボタン（PCでは非表示、スマホ用の指定はメディアクエリ内） */
+.hamburger {
+  display: none;
+}
+
+.content,
+.footer {
+  position: relative;
+  z-index: 1;   /* mainvisual（0）より手前 */
+}
+
+.content {
+  background-color: #fff;   /* 背景がないと画像が透けて見える */
+}
+
+/* ==============================
+   メインビジュアル
+   画像の上に文字を重ねる（position）
+============================== */
+.mainvisual {
+  position: sticky; 
+  top: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100vh;
+  margin-top: calc(-1 * var(--header-h));
+}
+
+.mainvisual img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 縦横比を保ったまま枠いっぱいに表示 */
+}
+
+/* 文字を読みやすくするため、画像の上に半透明の黒を重ねる */
+.mainvisual::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  /* background-color: rgba(0, 0, 0, 0.35); */
+  background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5));
+}
+
+.caption {
+  font-family: "Shippori Mincho", serif;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin-top: -100vh;
+  width: 100%;
+  text-align: center;
+  gap: 30px;
+  color: #fff;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mainvisual-catch {
+  font-size: 70px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  animation: fadeUp 1.5s ease-out 0.6s both;
+}
+
+.mainvisual-sub {
+  font-size: 32px;
+  animation: fadeUp 1.5s ease-out 1.6s both;
+}
+
+/* メインビジュアルCTAボタン */
+.hero-cta {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 18px 56px;
+  background-color: var(--cheese);
+  color: #fff;
+  font-family: "Noto Sans JP", sans-serif;  /* caption の明朝体を引き継がない */
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  border-radius: 40px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  animation: fadeUp 1s ease-out 2.2s both;  /* サブコピーの後に表示 */
+  transition: filter 0.3s;
+}
+
+/* animation で opacity と transform を使っているため、
+   ホバーは opacity ではなく filter（明るさ）で表現する */
+.hero-cta:hover {
+  filter: brightness(1.15);
+}
+
+/* スクロールの目印（メインビジュアルの下中央） */
+.scroll-down {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);   /* 横中央に置く */
+  font-family: "Cormorant Garamond", serif;
+  font-size: 25px;
+  letter-spacing: 0.1em;
+  color: #fff;
+  /* transform は位置合わせに使っているので、表示アニメーションは opacity だけにする */
+  animation: fadeIn 1s ease-out 2.8s both;
+}
+
+/* 文字の下に縦線を引き、上から下へ流れるように動かす */
+.scroll-down::after {
+  content: "";
+  display: block;
+  width: 1px;
+  height: 60px;
+  margin: 10px auto 0;
+  background-color: #fff;
+  animation: scrollLine 2s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* 線が上から伸びて、下へ縮んで消える動きを繰り返す */
+@keyframes scrollLine {
+  0%    { transform: scaleY(0); transform-origin: top; }
+  50%   { transform: scaleY(1); transform-origin: top; }
+  50.1% { transform: scaleY(1); transform-origin: bottom; }
+  100%  { transform: scaleY(0); transform-origin: bottom; }
+}
+
+/* 動きを減らす設定の人には、線のアニメーションを止める */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-down::after {
+    animation: none;
+  }
+}
+
+.sp-only {
+  display: none;
+}
+
+/* ==============================
+   コンテンツ共通
+============================== */
+.content section {
+  padding:  60px 0;
+  scroll-margin-top: var(--header-h); /* 移動先の見出しがヘッダーに隠れないように */
+}
+
+.section-title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 48px;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 30px;
+  letter-spacing: 0.15em;
+}
+
+/* 見出しの下にチーズ色の線を引く */
+.section-title::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 4px;
+  margin: 1px auto 0;
+  background-color: var(--cheese);
+}
+
+.section-title-jp {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 60px;
+}
+
+/* ==============================
+   About
+============================== */
+.about {
+  text-align: center;
+}
+
+.about p {
+  margin-bottom: 40px;
+}
+
+.about-slider {
+  position: relative;
+  height: 400px;
+  margin: 40px auto 0;
+  overflow: hidden;
+}
+
+.about-slider img {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  object-fit: cover;
+  /* margin-top: 0; */
+  /* 待機中の画像：右側に隠しておく */
+  transform: translateX(70%) scale(0.9);
+  opacity: 0;
+  z-index: 0;
+  transition: transform 2s, opacity 2s;
+}
+
+/* 中央の画像 */
+.about-slider img.is-active {
+  transform: translateX(-50%);
+  opacity: 1;
+  z-index: 2;
+}
+
+/* 左の画像 */
+.about-slider img.is-prev {
+  transform: translateX(-150%) scale(0.9);
+  opacity: 0.5;
+  z-index: 1;
+}
+
+/* 右の画像 */
+.about-slider img.is-next {
+  transform: translateX(50%) scale(0.9);
+  opacity: 0.5;
+  z-index: 1;
+}
+.slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);   /* 縦方向の中央に置く */
+  z-index: 3;                    /* 画像（最大 z-index: 2）より上に出す */
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.slider-arrow:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.slider-prev { left: 16px; }
+.slider-next { right: 16px; }
+
+/* 停止・再生ボタン（スライダーの右下） */
+.slider-pause {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 3;                    /* 画像より上に出す */
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.slider-pause:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* ==============================
+   Course
+   3つのコースをフレックスボックスで横並び
+============================== */
+.course-lead {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.course-list {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.course-item {
+  display: flex;
+  align-items: center;
+}
+
+.course-item:nth-child(even) {
+  flex-direction: row-reverse;
+}
+
+.course-item img {
+  display: block;
+  width: 50%;
+  height: auto;
+  object-fit: cover;
+}
+
+.course-item div {
+  width: 50%;
+  padding: 50px;
+  box-sizing: border-box;   /* padding を 50% の中に含める */
+}
+
+.course-num {
+  display: block;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 64px;
+  line-height: 1;
+  color: var(--cheese);
+  opacity: 0.4;
+  margin-bottom: 10px;
+}
+
+.course-item h3 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 40px;
+}
+
+.course-item p {
+  max-width: 480px;
+}
+
+
+/* ==============================
+   News
+   画像（左）と文章（右）を横並び
+============================== */
+
+.news-list {
+  display: flex;
+  align-items: flex-start;
+  gap: 30px;
+  justify-content: center;
+  /* width: fit-content;
+  margin: 0 auto; */
+}
+
+.news-item {
+  width: 300px;
+}
+
+.news-item img {
+  width: 300px;
+  height: auto;   /* HTML の height が使われて縦に伸びないように */
+  margin-bottom: 30px;
+  transition: transform 0.4s;
+}
+
+.news-text time {
+  display: block;
+  /* color: #e8a400; */
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+.news-item a {
+  display: block;
+  overflow: hidden;
+  transition: color 0.1s;
+}
+.news-item a:hover {
+  color: var(--cheese);
+}
+
+.news-item a:hover img {
+  transform:  scale(1.05);
+}
+
+.btn-news-more {
+  display: flex;
+  justify-content: center; /* 文字を横方向の中央に */
+  align-items: center;     /* 文字を縦方向の中央に */
+  width: 300px;
+  height: 60px;
+  margin: 60px auto;     /* 左右autoでボタン自体を中央配置 */
+  background: var(--cheese);
+  border-radius: 30px;
+  color: #fff;
+  font-size: 18px;
+  transition: opacity 0.3s;
+}
+
+.btn-news-more:hover {
+  opacity: 0.7;
+}
+
+/* ==============================
+   Access
+============================== */
+.access {
+  background-color: var(--cream); 
+}
+
+.access-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.access-map {
+  width: 100%;
+}
+
+.access-map iframe {
+  width: 100%;
+  /* height: 400px; */
+  vertical-align: bottom;
+}
+
+/* dt（項目名）と dd（内容）を1行ずつ横並びにする */
+.access-info {
+  display: flex;
+  flex-wrap: wrap; /* 幅を超えたら折り返す */
+  width: 100%;
+  max-width: 680px;   /* 最寄り駅が1行に収まる幅（dt 140px ＋ dd 540px） */
+  row-gap: 30px;
+  padding: 60px 0;
+}
+
+.access-info dt {
+  width: 140px;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd;
+}
+
+.access-info dd {
+  width: 540px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* ==============================
+   Contact（フォーム）
+============================== */
+.contact {
+  text-align: center;
+}
+
+.contact p {
+  margin-bottom: 30px;
+}
+
+.contact-note {
+  font-size: 14px;
+  color: #c00;
+  margin-bottom: 30px;
+}
+
+.required-badge {
+  display: inline-block;
+  background: var(--cheese);
+  border-radius: 5px;
+  color: var(--cream);
+  font-size: 12px;
+  line-height: 1;
+  padding: 4px 7px;
+  margin-top: 4px;       /* 項目名の1行目（高さ28.8px）の中央にそろえる */
+  margin-left: 8px;      /* 項目名が長いときも、くっつかないように */
+  flex-shrink: 0;        /* 項目名が長くてもバッジが縮まないように */
+}
+
+.contact-form {
+  width: 100%;
+  max-width: 850px;
+  margin: 70px auto;
+  text-align: left;
+}
+
+/* dt（項目名）と dd（入力欄）を横並び */
+.contact-form dl {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.contact-form dt {
+  display: flex;
+  justify-content: space-between;  /* 項目名は左、必須バッジは右端に置く */
+  align-items: flex-start;         /* 行が高くても、項目名とバッジは上にそろえる */
+  width: 250px;
+  font-weight: bold;
+  padding: 8px 16px 8px 16px;
+  box-sizing: border-box; /* padding と border を width に含める */
+}
+
+.contact-form dd {
+  width: 600px;
+  padding: 8px;
+  box-sizing: border-box; /* padding と border を width に含める */
+}
+
+.contact-form input[type="text"],
+.contact-form input[type="email"],
+.contact-form select,
+.contact-form textarea {
+  width: 328px;
+  max-width: 100%;   /* 親より広くならないように */
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* padding を含めて幅100%にする */
+}
+
+/* チェックボックスの選択肢を縦に並べる */
+.contact-form dd label {
+  display: flex;
+  align-items: center;   /* ボタン（○や□）と文字の縦の中心をそろえる */
+  margin-bottom: 24px;
+  font-size: 14px;
+  line-height: 28.8px;   /* dt の1行の高さ（16px × 1.8）にそろえて、項目名と縦位置を合わせる */
+}
+
+.contact-form input[type="checkbox"],
+.contact-form input[type="radio"] {
+  margin: 0 10px 0 0;   /* ブラウザ標準の上 margin（3px）を消す */
+  flex-shrink: 0;       /* 文字が長くてもボタンが縮まないように */
+}
+
+/* お問い合わせ区分：選択肢を横に並べる */
+.contact-form .radio-inline label {
+  display: inline-flex;   /* 横並びのまま、ボタンと文字の中心をそろえる */
+  margin: 0 32px 0 0;   /* 上下の margin をなくして、項目名と同じ高さから始める */
+}
+
+.contact-submit {
+  display: block;
+  width: 300px;
+  margin: 30px auto 140px;
+  padding: 15px 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  background-color: var(--cheese);
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.contact-submit:hover {
+  opacity: 0.7;
+}
+
+/* ==============================
+   フッター
+============================== */
+.footer {
+  padding: 30px 0;
+  background-color: var(--brown);
+  color: #fff;
+  text-align: center;
+}
+
+.copy {
+  font-size: 12px;
+}
+
+/* ==============================
+   説明会申し込みボタン（画面下部に固定）
+============================== */
+.cta-btn {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  z-index: 20;                          /* ヘッダー（10）より手前 */
+  padding: 16px 48px;
+  background-color: var(--cheese);
+  color: #fff;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  border-radius: 40px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  /* 普段は隠しておく */
+  opacity: 0;
+  transform: translate(-50%, 20px);     /* 横中央 ＋ 少し下にずらす */
+  pointer-events: none;                 /* 見えない間はクリックできないように */
+  transition: opacity 0.4s, transform 0.4s;
+}
+
+/* 表示中 */
+.cta-btn.is-show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+
+.cta-btn:hover {
+  opacity: 0.8;
+}
+
+/* ==============================
+   スマホ対応（画面幅768px以下）
+   ※PC用の指定を上書きするため、必ずファイルの最後に置く
+============================== */
+@media (max-width: 768px) {
+
+  /* --- ヘッダー --- */
+  :root {
+    --header-h: 60px;
+  }
+  .header {
+    padding: 0 16px;
+  }
+  .header-logo img {
+    width: 140px;
+  }
+  /* --- ハンバーガーボタン --- */
+  .hamburger {
+    display: block;
+    position: relative;
+    width: 30px;
+    height: 22px;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  .hamburger span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--brown);
+    transition: transform 0.3s, opacity 0.3s;
+  }
+  .hamburger span:nth-child(1) { top: 0; }
+  .hamburger span:nth-child(2) { top: 10px; }
+  .hamburger span:nth-child(3) { top: 20px; }
+
+  /* 開いたとき：≡ → × */
+  .hamburger.is-open span:nth-child(1) {
+    transform: translateY(10px) rotate(45deg);
+  }
+  .hamburger.is-open span:nth-child(2) {
+    opacity: 0;
+  }
+  .hamburger.is-open span:nth-child(3) {
+    transform: translateY(-10px) rotate(-45deg);
+  }
+
+  /* --- メニュー本体 --- */
+  .header-nav {
+    position: fixed;
+    top: var(--header-h);                   /* ヘッダーのすぐ下から */
+    left: 0;
+    width: 100%;
+    height: calc(100vh - var(--header-h));  /* 画面の下まで */
+    background-color: rgba(255, 255, 255, 0.97);
+    /* 普段は隠しておく */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+  }
+  .header-nav.is-open {
+    opacity: 1;
+    visibility: visible;
+  }
+  .header-nav ul {
+    flex-direction: column;   /* 横並び → 縦並び */
+    align-items: center;
+    gap: 40px;
+    padding: 60px 0;
+  }
+
+  /* --- メインビジュアル --- */
+
+  .mainvisual img {
+    object-position: 58% center;   /* 右端を基準に表示 */
+  }
+
+  .mainvisual-catch {
+    font-size: 28px;
+  }
+  .mainvisual-sub {
+    font-size: 14px;
+  }
+  .hero-cta {
+    padding: 14px 36px;
+    font-size: 15px;
+  }
+  .sp-only {
+    display: inline;
+  }
+
+  /* --- 共通 --- */
+  .content section {
+    padding: 60px 20px;            /* 左右に余白を付ける */
+    scroll-margin-top: var(--header-h);
+  }
+  .section-title {
+    font-size: 32px;
+  }
+  .section-title-jp {
+    margin-bottom: 40px;
+  }
+  /* PC用の改行を消して、文章を画面幅で自然に折り返す */
+  .about br,
+  .course-lead br,
+  .contact br {
+    display: none;
+  }
+
+  /* --- About スライダー --- */
+  .about-slider {
+    height: 240px;
+  }
+  .about-slider img {
+    width: 80%;    /* 中央の1枚を大きく見せる */
+  }
+
+  /* --- Course：横並び → 縦並び --- */
+  .course-item,
+  .course-item:nth-child(even) {
+    flex-direction: column;
+  }
+  .course-item img,
+  .course-item div {
+    width: 100%;
+  }
+  .course-item div {
+    padding: 30px 0 50px;
+  }
+
+  /* --- News：横並び → 縦並び --- */
+  .news-list {
+    flex-direction: column;
+    align-items: center;
+    gap: 50px;
+  }
+
+  /* --- Access：項目名と内容を縦に並べる --- */
+  .access-info dt,
+  .access-info dd {
+    width: 100%;
+  }
+  .access-info dt {
+    border-bottom: none;
+  }
+
+  /* --- Contact：項目名と入力欄を縦に並べる --- */
+  .contact-form dt,
+  .contact-form dd {
+    width: 100%;
+  }
+  .contact-form dt {
+    justify-content: flex-start;   /* スマホでは横幅が広いので、バッジは項目名のすぐ横に戻す */
+    padding: 8px;
+    border-right: none;
+    border-bottom: none;
+  }
+  .contact-form input[type="text"],
+  .contact-form input[type="email"],
+  .contact-form select,
+  .contact-form textarea {
+    width: 100%;
+  }
+
+  /* --- 申し込みボタン --- */
+  .cta-btn {
+    bottom: 16px;
+    padding: 14px 32px;
+    white-space: nowrap;   /* ボタンの文字を折り返さない */
+  }
+}
